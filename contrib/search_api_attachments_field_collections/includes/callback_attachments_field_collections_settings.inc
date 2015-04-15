@@ -10,10 +10,15 @@ class SearchApiAttachmentsFieldCollectionsAlterSettings extends SearchApiAttachm
    * {@inheritdoc}
    */
   public function alterItems(array &$items) {
+    // Extension restriction.
     $exclude = array();
     foreach (explode(' ', $this->options['excluded_extensions']) as $ext) {
       $exclude[$ext] = file_get_mimetype('dummy.' . $ext);
     }
+
+    // File size restriction.
+    $max_file_size = parse_size($this->options['max_file_size']);
+
     // Get the field collection bundles.
     $field_collections_instances = field_info_instances('field_collection_item');
     $field_collections = array_keys($field_collections_instances);
@@ -53,13 +58,18 @@ class SearchApiAttachmentsFieldCollectionsAlterSettings extends SearchApiAttachm
                         $files = array_slice($files, 0, $this->options['number_indexed']);
                       }
                       foreach ($files as $file) {
+                        // Extension restriction.
                         if (!in_array($file['filemime'], $exclude) && !$this->is_temporary($file)) {
-                          $attachments = 'attachments_' . $file_field;
-                          if (isset($item->{$attachments})) {
-                            $item->{$attachments} .= ' ' . $this->getFileContent($file);
-                          }
-                          else {
-                            $item->{$attachments} = $this->getFileContent($file);
+                          // File size restriction.
+                          $file_size_errors = file_validate_size((object) $file, $max_file_size);
+                          if (empty($file_size_errors)) {
+                            $attachments = 'attachments_' . $file_field;
+                            if (isset($item->{$attachments})) {
+                              $item->{$attachments} .= ' ' . $this->getFileContent($file);
+                            }
+                            else {
+                              $item->{$attachments} = $this->getFileContent($file);
+                            }
                           }
                         }
                       }

@@ -12,10 +12,14 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
 
   public function alterItems(array &$items) {
 
+    // Extension restriction.
     $exclude = array();
     foreach (explode(' ', $this->options['excluded_extensions']) as $ext) {
       $exclude[$ext] = file_get_mimetype('dummy.' . $ext);
     }
+
+    // File size restriction.
+    $max_file_size = parse_size($this->options['max_file_size']);
     if ($this->index->getEntityType() == 'file') {
       foreach ($items as &$item) {
         $file = array();
@@ -23,7 +27,10 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
           $file[$key] = $value;
         }
         if (!in_array($file['filemime'], $exclude) && !$this->is_temporary($file)) {
-          $item->attachments_content = $this->getFileContent($file);
+          $file_size_errors = file_validate_size((object) $file, $max_file_size);
+          if (empty($file_size_errors)) {
+            $item->attachments_content = $this->getFileContent($file);
+          }
         }
       }
     }
@@ -38,13 +45,18 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
                 $value = array_slice($value, 0, $this->options['number_indexed']);
               }
               foreach ($value as $file) {
+                // Extension restriction.
                 if (!in_array($file['filemime'], $exclude) && !$this->is_temporary($file)) {
-                  $attachments = 'attachments_' . $name;
-                  if (isset($item->{$attachments})) {
-                    $item->{$attachments} .= ' ' . $this->getFileContent($file);
-                  }
-                  else {
-                    $item->{$attachments} = $this->getFileContent($file);
+                  // File size restriction.
+                  $file_size_errors = file_validate_size((object) $file, $max_file_size);
+                  if (empty($file_size_errors)) {
+                    $attachments = 'attachments_' . $name;
+                    if (isset($item->{$attachments})) {
+                      $item->{$attachments} .= ' ' . $this->getFileContent($file);
+                    }
+                    else {
+                      $item->{$attachments} = $this->getFileContent($file);
+                    }
                   }
                 }
               }
@@ -71,6 +83,15 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       '#default_value' => isset($this->options['number_indexed']) ? $this->options['number_indexed'] : '0',
       '#size' => 5,
       '#description' => t('The number of files to index per file field. The order of indexation is the weight in the widget. 0 for no restriction.'),
+    );
+    $form['max_file_size'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Maximum file size'),
+      '#default_value' => isset($this->options['max_file_size']) ? $this->options['max_file_size'] : '0',
+      '#description' => t('Enter a value like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes) in order to restrict the max file size of files that should be indexed.'),
+      '#size' => 80,
+      '#maxlength' => 255,
+      '#element_validate' => array('_file_generic_settings_max_filesize'),
     );
     return $form;
   }
