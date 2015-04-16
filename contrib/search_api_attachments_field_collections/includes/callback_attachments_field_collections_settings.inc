@@ -4,6 +4,7 @@
  * @file
  * Search API data alteration callback.
  */
+
 class SearchApiAttachmentsFieldCollectionsAlterSettings extends SearchApiAttachmentsAlterSettings {
 
   /**
@@ -58,17 +59,20 @@ class SearchApiAttachmentsFieldCollectionsAlterSettings extends SearchApiAttachm
                         $files = array_slice($files, 0, $this->options['number_indexed']);
                       }
                       foreach ($files as $file) {
-                        // Extension restriction.
-                        if (!in_array($file['filemime'], $exclude) && !$this->is_temporary($file)) {
-                          // File size restriction.
-                          $file_size_errors = file_validate_size((object) $file, $max_file_size);
-                          if (empty($file_size_errors)) {
-                            $attachments = 'attachments_' . $file_field;
-                            if (isset($item->{$attachments})) {
-                              $item->{$attachments} .= ' ' . $this->getFileContent($file);
-                            }
-                            else {
-                              $item->{$attachments} = $this->getFileContent($file);
+                        // Private file restriction.
+                        if (!$this->is_temporary($file) && !($this->options['excluded_private'] && $this->is_private($file))) {
+                          // Extension restriction.
+                          if (!in_array($file['filemime'], $exclude)) {
+                            // File size restriction.
+                            $file_size_errors = file_validate_size((object) $file, $max_file_size);
+                            if (empty($file_size_errors)) {
+                              $attachments = 'attachments_' . $file_field;
+                              if (isset($item->{$attachments})) {
+                                $item->{$attachments} .= ' ' . $this->getFileContent($file);
+                              }
+                              else {
+                                $item->{$attachments} = $this->getFileContent($file);
+                              }
                             }
                           }
                         }

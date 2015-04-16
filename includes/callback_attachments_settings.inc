@@ -21,15 +21,20 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     // File size restriction.
     $max_file_size = parse_size($this->options['max_file_size']);
     if ($this->index->getEntityType() == 'file') {
-      foreach ($items as &$item) {
+      foreach ($items as $id => &$item) {
         $file = array();
         foreach ($item as $key => $value) {
           $file[$key] = $value;
         }
-        if (!in_array($file['filemime'], $exclude) && !$this->is_temporary($file)) {
-          $file_size_errors = file_validate_size((object) $file, $max_file_size);
-          if (empty($file_size_errors)) {
-            $item->attachments_content = $this->getFileContent($file);
+        // Private file restriction.
+        if (!$this->is_temporary($file) && !($this->options['excluded_private'] && $this->is_private($file))) {
+          // Extension restriction.
+          if (!in_array($file['filemime'], $exclude)) {
+            // File size restriction.
+            $file_size_errors = file_validate_size((object) $file, $max_file_size);
+            if (empty($file_size_errors)) {
+              $item->attachments_content = $this->getFileContent($file);
+            }
           }
         }
       }
@@ -45,17 +50,20 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
                 $value = array_slice($value, 0, $this->options['number_indexed']);
               }
               foreach ($value as $file) {
-                // Extension restriction.
-                if (!in_array($file['filemime'], $exclude) && !$this->is_temporary($file)) {
-                  // File size restriction.
-                  $file_size_errors = file_validate_size((object) $file, $max_file_size);
-                  if (empty($file_size_errors)) {
-                    $attachments = 'attachments_' . $name;
-                    if (isset($item->{$attachments})) {
-                      $item->{$attachments} .= ' ' . $this->getFileContent($file);
-                    }
-                    else {
-                      $item->{$attachments} = $this->getFileContent($file);
+                // Private file restriction.
+                if (!$this->is_temporary($file) && !($this->options['excluded_private'] && $this->is_private($file))) {
+                  // Extension restriction.
+                  if (!in_array($file['filemime'], $exclude)) {
+                    // File size restriction.
+                    $file_size_errors = file_validate_size((object) $file, $max_file_size);
+                    if (empty($file_size_errors)) {
+                      $attachments = 'attachments_' . $name;
+                      if (isset($item->{$attachments})) {
+                        $item->{$attachments} .= ' ' . $this->getFileContent($file);
+                      }
+                      else {
+                        $item->{$attachments} = $this->getFileContent($file);
+                      }
                     }
                   }
                 }
@@ -92,6 +100,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       '#size' => 80,
       '#maxlength' => 255,
       '#element_validate' => array('_file_generic_settings_max_filesize'),
+    );
+    $form['excluded_private'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Exclude private files'),
+      '#default_value' => isset($this->options['excluded_private']) ? $this->options['excluded_private'] : TRUE,
+      '#description' => t('Check this box if you want to exclude private files to be indexed.'),
     );
     return $form;
   }
@@ -315,11 +329,32 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $extraction;
   }
 
+  /**
+   * Check if the file is private.
+   *
+   * @param array $file
+   *   A file array.
+   *
+   * @return bool
+   *   TRUE if the file is private. FALSE otherwise.
+   */
+  protected function is_private($file) {
+    $result = FALSE;
+    $wrapper = 'private://';
+    $uri = $file['uri'];
+    if (substr($uri, 0, 10) == $wrapper) {
+      $result = TRUE;
+    }
+    return $result;
+  }
+
   protected function is_temporary($file) {
-    $needle = 'temporary://';
-    $haystack = $file['uri'];
-    $test = strpos($haystack, $needle);
-    $result = ($test !== FALSE);
+    $result = FALSE;
+    $wrapper = 'temporary://';
+    $uri = $file['uri'];
+    if (substr($uri, 0, 12) == $wrapper) {
+      $result = TRUE;
+    }
     return $result;
   }
 
