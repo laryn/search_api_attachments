@@ -59,12 +59,26 @@ function search_api_attachments_settings_form($form, &$form_state) {
 function search_api_attachments_settings_form_validate($form, &$form_state) {
   // We only need to validate the tika path if we're using local extraction.
   if ($form_state['values']['search_api_attachments_extract_using'] == 'tika') {
+    // Tika extraction without tika jar error.
     if (empty($form_state['values']['search_api_attachments_tika_jar'])) {
       form_set_error('search_api_attachments_tika_jar', t('Tika jar is mandatory.'));
     }
+
+    // Check that the file exists.
     $path = realpath($form_state['values']['search_api_attachments_tika_path']);
-    if (!file_exists($path . '/' . $form_state['values']['search_api_attachments_tika_jar'])) {
+    $tika = $path . '/' . $form_state['values']['search_api_attachments_tika_jar'];
+    if (!file_exists($tika)) {
       form_set_error('search_api_attachments_tika_path', t('Tika jar file not found at this path.'));
+    }
+    // Check that the file is an executable jar.
+    else {
+      $cmd = escapeshellcmd('java') . ' -jar ' . escapeshellarg($tika);
+      exec($cmd, $output, $return_code);
+      // $return_code = 1 if it fails. 0 instead.
+      if ($return_code) {
+        form_set_error('search_api_attachments_tika_path', '');
+        form_set_error('search_api_attachments_tika_jar', t('Tika jar file is not an executable jar. Please check if you have not downloaded a corrupted jar file.'));
+      }
     }
   }
 }
