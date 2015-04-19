@@ -59,6 +59,7 @@ function search_api_attachments_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => variable_get('search_api_attachments_preserve_cache', FALSE),
     '#title' => t('Preserve cached extractions across cache clears.'),
+    '#description' => t('When checked, clearing the sidewide cache will not clear the cache of extracted files.'),
   );
   return system_settings_form($form);
 }

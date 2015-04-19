@@ -78,3 +78,16 @@ Then restart Tomcat/Jetty.
 SUBMODULES
 -------------------------------
 search_api_attachments_field_collections: More details in contrib folder.
+
+CACHING
+-------
+Extracting files content can take a long time and it may not be needed to do it
+again each time a node gets reindexed.
+search_api_attachments have a cahe bin where we store all the extracted files
+contents: this is the cache_search_api_attachments table.
+cache its are in the form of: 'cached_extraction_[fid]' where [fid] is the file
+id.
+When a file is deleted or updated, we drop its extracted stored cache.
+Whend the sidewide cache is deleted (drush cc all per example) we drop all the
+stored extracted files cache only if 'Preserve cached extractions across cache
+ clears.' option is unchecked in the configuration form of the module.
