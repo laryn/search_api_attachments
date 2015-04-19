@@ -68,5 +68,7 @@ function search_api_attachments_file_delete($file) {
 * Implements hook_flush_caches().
 */
 function search_api_attachments_flush_caches() {
-  return array('cache_search_api_attachments');
+  if (!variable_get('search_api_attachments_preserve_cache', FALSE)) {
+    return array('cache_search_api_attachments');
+  }
 }

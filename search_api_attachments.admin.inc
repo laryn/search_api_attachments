@@ -50,6 +50,16 @@ function search_api_attachments_settings_form($form, &$form_state) {
     '#default_value' => variable_get('search_api_attachments_extracting_servlet_path', 'update/extract'),
     '#description' => t('The path to the extracting servlet. E.g. update/extract or extract/tika'),
   );
+  $form['search_api_attachments_cache_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Caching settings'),
+    '#collapsible' => TRUE,
+  );
+  $form['search_api_attachments_cache_settings']['search_api_attachments_preserve_cache'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('search_api_attachments_preserve_cache', FALSE),
+    '#title' => t('Preserve cached extractions across cache clears.'),
+  );
   return system_settings_form($form);
 }
 
