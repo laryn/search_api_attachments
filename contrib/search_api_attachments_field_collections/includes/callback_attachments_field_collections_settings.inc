@@ -55,7 +55,7 @@ class SearchApiAttachmentsFieldCollectionsAlterSettings extends SearchApiAttachm
                     $files = field_get_items('field_collection_item', $collection_item, $file_field);
                     if (!empty($files)) {
                       // Limit to the max number of value per field.
-                      if ($this->options['number_indexed'] != '0' && count($files) > $this->options['number_indexed']) {
+                      if (isset($this->options['number_indexed']) && $this->options['number_indexed'] != '0' && count($files) > $this->options['number_indexed']) {
                         $files = array_slice($files, 0, $this->options['number_indexed']);
                       }
                       foreach ($files as $file) {

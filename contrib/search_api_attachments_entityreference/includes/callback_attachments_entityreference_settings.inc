@@ -43,7 +43,7 @@ class SearchApiAttachmentsEntityreferenceAlterSettings extends SearchApiAttachme
                   $files = field_get_items($entityreference_field['settings']['target_type'], $referenced_entity, $file_field['field_name']);
                   if (!empty($files)) {
                     // Limit to the max number of value per field.
-                    if ($this->options['number_indexed'] != '0' && count($files) > $this->options['number_indexed']) {
+                    if (isset($this->options['number_indexed']) && $this->options['number_indexed'] != '0' && count($files) > $this->options['number_indexed']) {
                       $files = array_slice($files, 0, $this->options['number_indexed']);
                     }
                     foreach ($files as $file) {

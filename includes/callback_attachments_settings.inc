@@ -46,7 +46,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
           if (isset($item->$name)) {
             foreach ($item->$name as $value) {
               // Limit to the max number of value per field.
-              if ($this->options['number_indexed'] != '0' && count($value) > $this->options['number_indexed']) {
+              if (isset($this->options['number_indexed']) && $this->options['number_indexed'] != '0' && count($value) > $this->options['number_indexed']) {
                 $value = array_slice($value, 0, $this->options['number_indexed']);
               }
               foreach ($value as $file) {
