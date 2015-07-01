@@ -46,6 +46,12 @@ Download Apache Tika library: http://tika.apache.org/download.html
 Enter the full path on your server where you downloaded the jar
 e.g. /var/apache-tika/ and the name of the jar file e.g. tika-app-1.4.jar
 
+- Hidden settings
+
+search_api_attachments_java:
+  By changing this variable, you can set the path to your java executable. The
+  default is 'java'.
+
 EXTRACTION CONFIGURATION (Solr)
 -------------------------------
 This requires 1.0-RC5 or newer of the 'Search API Solr' module (namely for issue
@@ -83,7 +89,7 @@ CACHING
 -------
 Extracting files content can take a long time and it may not be needed to do it
 again each time a node gets reindexed.
-search_api_attachments have a cahe bin where we store all the extracted files
+search_api_attachments have a cache bin where we store all the extracted files
 contents: this is the cache_search_api_attachments table.
 cache its are in the form of: 'cached_extraction_[fid]' where [fid] is the file
 id.

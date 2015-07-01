@@ -237,7 +237,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     // Force running the Tika jar headless.
     $param = ' -Djava.awt.headless=true ' . $param;
 
-    $cmd = escapeshellcmd('java') . $param . ' -jar ' . escapeshellarg($tika) . ' -t ' . escapeshellarg($filepath);
+    $cmd = variable_get('search_api_attachments_java', 'java') . $param . ' -jar ' . escapeshellarg($tika) . ' -t ' . escapeshellarg($filepath);
     if (strpos(ini_get('extension_dir'), 'MAMP/')) {
       $cmd = 'export DYLD_LIBRARY_PATH=""; ' . $cmd;
     }
