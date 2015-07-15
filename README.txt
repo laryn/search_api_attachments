@@ -81,8 +81,22 @@ And add the following line:
 
 Then restart Tomcat/Jetty.
 
+EXTRACTION CONFIGURATION (Pdftotext)
+-------------------------------
+Pdftotext is a command line utility tool included by default on many linux
+distributions. See the wikipedia page for more info:
+https://en.wikipedia.org/wiki/Pdftotext
+
+EXTRACTION CONFIGURATION (Pdf2txt)
+-------------------------------
+On Debian 8
+
+Install Pdf2txt (tested with package version 20110515+dfsg-1 and python 2.7.9)
+> sudo apt-get install python-pdfminer
+
 SUBMODULES
 -------------------------------
+search_api_attachments_entityreference: More details in contrib folder.
 search_api_attachments_field_collections: More details in contrib folder.
 
 CACHING
@@ -94,6 +108,11 @@ contents: this is the cache_search_api_attachments table.
 cache its are in the form of: 'cached_extraction_[fid]' where [fid] is the file
 id.
 When a file is deleted or updated, we drop its extracted stored cache.
-Whend the sidewide cache is deleted (drush cc all per example) we drop all the
+When the sidewide cache is deleted (drush cc all per example) we drop all the
 stored extracted files cache only if 'Preserve cached extractions across cache
  clears.' option is unchecked in the configuration form of the module.
+
+DEVELOPMENT
+-----------
+On the admin form of Search API attachements, you can enable the debug feature.
+It will add a lot of information in the watchdog while indexing.
