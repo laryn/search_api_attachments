@@ -75,13 +75,15 @@ class SearchApiAttachmentsViewsHandlerAttachmentsFilter extends views_handler_fi
     // Loop through all defined fields and remove those starting by
     // 'attachments_' prefix.
     $fields = $this->query->getFields();
-    foreach ($fields as $key => $field_name) {
-      $prefix = 'attachments_';
-      if (strpos($field_name, $prefix) === 0) {
-        unset($fields[$key]);
+    if (!empty($fields)) {
+      foreach ($fields as $key => $field_name) {
+        $prefix = 'attachments_';
+        if (strpos($field_name, $prefix) === 0) {
+          unset($fields[$key]);
+        }
       }
+      $this->query->fields($fields);
     }
-    $this->query->fields($fields);
   }
 
 }
