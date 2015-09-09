@@ -87,7 +87,7 @@ Pdftotext is a command line utility tool included by default on many linux
 distributions. See the wikipedia page for more info:
 https://en.wikipedia.org/wiki/Pdftotext
 
-EXTRACTION CONFIGURATION (Pdf2txt)
+EXTRACTION CONFIGURATION (python Pdf2txt)
 -------------------------------
 On Debian 8
 
@@ -116,3 +116,8 @@ DEVELOPMENT
 -----------
 On the admin form of Search API attachements, you can enable the debug feature.
 It will add a lot of information in the watchdog while indexing.
+
+Hidden Features
+---------------
+This module suggests a Views filter to choose to search in attachments files too
+or not. 
