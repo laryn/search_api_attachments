@@ -221,7 +221,6 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
 
   protected function extract_exif($file) {
     $ret = '';
-    $size = getimagesize($this->get_realpath($file), $info);
     if (isset($info['APP13'])) {
       $iptc = iptcparse($info['APP13']);
       if (is_array($iptc)) {

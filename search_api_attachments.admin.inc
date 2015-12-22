@@ -113,7 +113,7 @@ function search_api_attachments_settings_form_validate($form, &$form_state) {
       exec($cmd, $output, $return_code);
       // $return_code = 1 if it fails. 0 instead.
       if ($return_code) {
-        form_set_error('search_api_attachments_tika_path', '');
+        form_set_error('search_api_attachments_tika_path', t('There may be a problem with tika path.'));
         form_set_error('search_api_attachments_tika_jar', t('Tika jar file is not an executable jar. Please check if you have not downloaded a corrupted jar file.'));
       }
     }
@@ -136,7 +136,7 @@ function search_api_attachments_settings_form_validate($form, &$form_state) {
       exec($cmd, $output, $return_code);
       // $return_code = 1 if it fails. 100 instead.
       if ($return_code != 100) {
-        form_set_error('search_api_attachments_python_pdf2txt_path', '');
+        form_set_error('search_api_attachments_python_pdf2txt_path', t('There may be a problem with python pdf2txt path.'));
         form_set_error('search_api_attachments_python_pdf2txt_script', t('Pdf2txt Python script file is not executable.'));
       }
     }
