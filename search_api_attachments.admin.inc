@@ -109,7 +109,7 @@ function search_api_attachments_settings_form_validate($form, &$form_state) {
     }
     // Check that the file is an executable jar.
     else {
-      $cmd = escapeshellcmd('java') . ' -jar ' . escapeshellarg($tika) . ' -V';
+      $cmd = escapeshellcmd(variable_get('search_api_attachments_java', 'java')) . ' -jar ' . escapeshellarg($tika) . ' -V';
       exec($cmd, $output, $return_code);
       // $return_code = 1 if it fails. 0 instead.
       if ($return_code) {
