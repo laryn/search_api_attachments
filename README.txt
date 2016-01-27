@@ -98,6 +98,7 @@ SUBMODULES
 -------------------------------
 search_api_attachments_entityreference: More details in contrib folder.
 search_api_attachments_field_collections: More details in contrib folder.
+search_api_attachments_commerce_product_reference: More details in contrib folder.
 
 CACHING
 -------
@@ -120,4 +121,4 @@ It will add a lot of information in the watchdog while indexing.
 Hidden Features
 ---------------
 This module suggests a Views filter to choose to search in attachments files too
-or not. 
+or not.
