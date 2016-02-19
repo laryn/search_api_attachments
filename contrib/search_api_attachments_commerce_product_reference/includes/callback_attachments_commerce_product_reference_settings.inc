@@ -21,7 +21,7 @@ class SearchApiAttachmentsCommerceProductReferenceAlterSettings extends SearchAp
     $max_file_size = parse_size($this->options['max_file_size']);
 
     // Get the entity reference fields.
-    $poroduct_reference_fields = $this->getProductReferenceFields();
+    $product_reference_fields = $this->getProductReferenceFields();
 
     // Get the file fields.
     $file_fields = $this->getFileFields();
@@ -30,7 +30,7 @@ class SearchApiAttachmentsCommerceProductReferenceAlterSettings extends SearchAp
       $item_wrapper = entity_metadata_wrapper($this->index->item_type, $item);
 
       // Case of entity reference fields.
-      foreach ($poroduct_reference_fields as $product_reference_field) {
+      foreach ($product_reference_fields as $product_reference_field) {
         if (isset($item->{$product_reference_field['field_name']})) {
           $referenced_entities = $item_wrapper->{$product_reference_field['field_name']}->value();
           // Manage case of single value fields by reproducing the structure of
