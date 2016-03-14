@@ -39,7 +39,7 @@ class SearchApiAttachmentsEntityreferenceAlterSettings extends SearchApiAttachme
             $referenced_entities = array($referenced_entities);
           }
           // Index the files content.
-          if (!empty($file_fields)) {
+          if (!empty($file_fields) && !empty($referenced_entities)) {
             foreach ($file_fields as $file_field) {
               foreach ($referenced_entities as $referenced_entity) {
                 // The referenced entity has the file field.
