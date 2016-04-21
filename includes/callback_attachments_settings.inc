@@ -19,7 +19,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
 
     // File size restriction.
-    $max_file_size = parse_size($this->options['max_file_size']);
+    if (isset($this->options['max_file_size'])) {
+      $max_file_size = parse_size($this->options['max_file_size']);
+    }
+    else {
+      $max_file_size = '0';
+    }
     if ($this->index->getEntityType() == 'file') {
       foreach ($items as $id => &$item) {
         $file = array();
