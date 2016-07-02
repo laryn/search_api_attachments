@@ -43,7 +43,7 @@ class SearchApiAttachmentsEntityreferenceAlterSettings extends SearchApiAttachme
                       $files = array_slice($files, 0, $this->options['number_indexed']);
                     }
                     foreach ($files as $file) {
-                      if ($this->isFileIndexable($file)) {
+                      if ($this->isFileIndexable($file, $item, $entityreference_field['field_name'])) {
                         $attachments = 'attachments_' . $file_field['field_name'];
                         if (isset($item->{$attachments})) {
                           $item->{$attachments} .= ' ' . $this->getFileContent($file);

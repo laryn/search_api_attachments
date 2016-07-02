@@ -50,7 +50,7 @@ class SearchApiAttachmentsFieldCollectionsAlterSettings extends SearchApiAttachm
                         $files = array_slice($files, 0, $this->options['number_indexed']);
                       }
                       foreach ($files as $file) {
-                        if ($this->isFileIndexable($file)) {
+                        if ($this->isFileIndexable($file, $item, $field_collection_name)) {
                           $attachments = 'attachments_' . $file_field;
                           if (isset($item->{$attachments})) {
                             $item->{$attachments} .= ' ' . $this->getFileContent($file);

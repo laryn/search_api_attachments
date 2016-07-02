@@ -54,7 +54,7 @@ class SearchApiAttachmentsMultifieldAlterSettings extends SearchApiAttachmentsAl
                         $files = array_slice($files, 0, $this->options['number_indexed']);
                       }
                       foreach ($files as $file) {
-                        if ($this->isFileIndexable($file)) {
+                        if ($this->isFileIndexable($file, $item, $multifield)) {
                           $attachments = 'attachments_' . $file_field;
                           if (isset($item->{$attachments})) {
                             $item->{$attachments} .= ' ' . $this->getFileContent($file);

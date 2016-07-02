@@ -18,7 +18,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
         foreach ($item as $key => $value) {
           $file[$key] = $value;
         }
-        if ($this->isFileIndexable($file)) {
+        if ($this->isFileIndexable($file, $item)) {
           $item->attachments_content = $this->getFileContent($file);
         }
       }
@@ -34,7 +34,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
                 $value = array_slice($value, 0, $this->options['number_indexed']);
               }
               foreach ($value as $file) {
-                if ($this->isFileIndexable($file)) {
+                if ($this->isFileIndexable($file, $item, $name)) {
                   $attachments = 'attachments_' . $name;
                   if (isset($item->{$attachments})) {
                     $item->{$attachments} .= ' ' . $this->getFileContent($file);
@@ -51,7 +51,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
   }
 
-  public function isFileIndexable($file) {
+  public function isFileIndexable($file, $item, $field_name = NULL) {
     // Extension restriction.
     $exclude = array();
     foreach (explode(' ', $this->options['excluded_extensions']) as $ext) {
@@ -72,6 +72,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
         // File size restriction.
         $file_size_errors = file_validate_size((object) $file, $max_file_size);
         if (empty($file_size_errors)) {
+          // Allow customization of indexability rules.
+          foreach (module_implements('search_api_attachments_indexable') as $module) {
+            if (module_invoke($module, 'search_api_attachments_indexable', $file, $item, $field_name) === FALSE) {
+              return FALSE;
+            }
+          }
           return TRUE;
         }
       }
