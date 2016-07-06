@@ -4,6 +4,7 @@ core = 7.x
 package = Search
 configure = admin/config/search/search_api/attachments
 
+dependencies[] = file
 dependencies[] = search_api
 
 files[] = includes/callback_attachments_settings.inc
