@@ -52,6 +52,15 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   }
 
   public function isFileIndexable($file, $item, $field_name = NULL) {
+    // File entity bundle restriction.
+    if (isset($this->options['excluded_file_entity_bundles'])) {
+      if (!empty($this->options['excluded_file_entity_bundles'])) {
+        if (in_array($file->type, $this->options['excluded_file_entity_bundles'])) {
+          return FALSE;
+        }
+      }
+    }
+
     // Extension restriction.
     $exclude = array();
     foreach (explode(' ', $this->options['excluded_extensions']) as $ext) {
@@ -65,6 +74,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     else {
       $max_file_size = '0';
     }
+
     // Private file restriction.
     if (!$this->is_temporary($file) && !($this->options['excluded_private'] && $this->is_private($file))) {
       // Extension restriction.
@@ -117,6 +127,24 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       '#default_value' => isset($this->options['excluded_private']) ? $this->options['excluded_private'] : TRUE,
       '#description' => t('Check this box if you want to exclude private files to be indexed.'),
     );
+    // Add setting specific for the file entity.
+    if (module_exists('file_entity')) {
+      // Build the select options.
+      $bundle_options = array();
+      foreach (field_info_bundles('file') as $bundle => $info) {
+        $bundle_options[$bundle] = $info['label'];
+      }
+      if ($bundle_options) {
+        $form['excluded_file_entity_bundles'] = array(
+          '#type' => 'select',
+          '#title' => t('Exclude file entity bundles'),
+          '#options' => $bundle_options,
+          '#multiple' => TRUE,
+          '#default_value' => isset($this->options['excluded_file_entity_bundles']) ? $this->options['excluded_file_entity_bundles'] : array(),
+          '#description' => t('File entity bundles that are excluded from indexing.'),
+        );
+      }
+    }
     return $form;
   }
 
