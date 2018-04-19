@@ -18,7 +18,7 @@ class SearchApiAttachmentsEntityreferenceAlterSettings extends SearchApiAttachme
     $file_fields = $this->getFileFields();
 
     foreach ($items as $id => &$item) {
-      $item_wrapper = entity_metadata_wrapper($this->index->item_type, $item);
+      $item_wrapper = entity_metadata_wrapper($this->index->getEntityType(), $item);
 
       // Case of entity reference fields.
       foreach ($entityreference_fields as $entityreference_field) {
@@ -68,7 +68,7 @@ class SearchApiAttachmentsEntityreferenceAlterSettings extends SearchApiAttachme
    */
   public function propertyInfo() {
     $ret = array();
-    if ($this->index->item_type == 'file') {
+    if ($this->index->getEntityType() == 'file') {
       $ret['attachments_content'] = array(
         'label' => 'File content',
         'description' => 'File content',
