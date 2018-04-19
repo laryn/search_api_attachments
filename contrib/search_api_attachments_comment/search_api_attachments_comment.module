@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Drupal hooks
+ */
+
+/**
+ * Implements hook_search_api_alter_callback_info().
+ */
+function search_api_attachments_comment_search_api_alter_callback_info() {
+  $callbacks['search_api_attachments_comment_alter_settings'] = array(
+    'name' => t('File attachments Comment'),
+    'description' => t('Extract the content of attached files of the comments and index it.'),
+    'class' => 'SearchApiAttachmentsCommentAlterSettings',
+  );
+  return $callbacks;
+}
+
+/**
+ * Implements hook_comment_insert().
+ */
+function search_api_attachments_comment_comment_insert($comment) {
+  // Mark the node of the comment to be reindexed.
+  search_api_track_item_change('node', array($comment->nid));
+}
+
+/**
+ * Implements hook_comment_update().
+ */
+function search_api_attachments_comment_comment_update($comment) {
+  // Mark the node of the comment to be reindexed.
+  search_api_track_item_change('node', array($comment->nid));
+}
+
+/**
+ * Implements hook_comment_delete().
+ */
+function search_api_attachments_comment_comment_delete($comment) {
+  // Mark the node of the comment to be reindexed.
+  search_api_track_item_change('node', array($comment->nid));
+}
