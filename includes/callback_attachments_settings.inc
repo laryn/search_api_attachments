@@ -275,7 +275,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   protected function extract_tika($file) {
     $filepath = $this->get_realpath($file);
     $tika_path = realpath(variable_get('search_api_attachments_tika_path', ''));
-    $tika = realpath($tika_path . '/' . variable_get('search_api_attachments_tika_jar', 'tika-app-1.4.jar'));
+    $tika = realpath($tika_path . '/' . variable_get('search_api_attachments_tika_jar', 'tika-app-1.6.jar'));
     if (!($tika) || !is_file($tika)) {
       throw new Exception(t('Invalid path or filename for tika application jar.'));
     }
