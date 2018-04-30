@@ -4,7 +4,6 @@
  * @file
  * Search API data alteration callback.
  */
-
 class SearchApiAttachmentsParagraphsAlterSettings extends SearchApiAttachmentsAlterSettings {
 
   /**
@@ -113,4 +112,5 @@ class SearchApiAttachmentsParagraphsAlterSettings extends SearchApiAttachmentsAl
     }
     return $ret;
   }
+
 }

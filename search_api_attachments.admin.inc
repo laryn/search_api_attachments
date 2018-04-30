@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @file
  * Admin settings

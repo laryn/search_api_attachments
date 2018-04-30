@@ -4,7 +4,6 @@
  * @file
  * Search API data alteration callback.
  */
-
 class SearchApiAttachmentsUserContentAlterSettings extends SearchApiAttachmentsAlterSettings {
 
   /**

@@ -4,7 +4,6 @@
  * @file
  * Search API data alteration callback.
  */
-
 class SearchApiAttachmentsCommerceProductReferenceAlterSettings extends SearchApiAttachmentsAlterSettings {
 
   /**
@@ -113,4 +112,5 @@ class SearchApiAttachmentsCommerceProductReferenceAlterSettings extends SearchAp
     }
     return $ret;
   }
+
 }

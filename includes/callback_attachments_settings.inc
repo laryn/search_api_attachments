@@ -4,7 +4,6 @@
  * @file
  * Search API data alteration callback
  */
-
 class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
 
   // Cache table name.
@@ -360,7 +359,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     setlocale(LC_CTYPE, 'en_US.UTF-8');
     // Pdftotext descriptions states that '-' as text-file will send text to
     // stdout.
-    $cmd = escapeshellcmd('pdftotext')  . ' ' . escapeshellarg($filepath) . ' -';
+    $cmd = escapeshellcmd('pdftotext') . ' ' . escapeshellarg($filepath) . ' -';
     // Restore the locale.
     setlocale(LC_CTYPE, $backup_locale);
     // Support UTF-8 commands: http://www.php.net/manual/en/function.shell-exec.php#85095
@@ -454,8 +453,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       if (isset($response->extracted)) {
         $extraction = $response->extracted;
       }
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       // Log the exception to watchdog. Exceptions from Solr may be transient,
       // or indicate a problem with a specific file.
       watchdog('search_api_attachments', 'Exception occurred sending %filepath to Solr.', array(
