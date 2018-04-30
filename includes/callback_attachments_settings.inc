@@ -24,7 +24,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
     else {
       $fields = $this->getIndexableFileFields();
-      foreach ($items as $id => &$item) {
+      foreach ($items as &$item) {
         foreach ($fields as $name => $field) {
           if (isset($item->$name)) {
             foreach ($item->$name as $value) {
