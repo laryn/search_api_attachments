@@ -235,6 +235,9 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
         if ($extraction_method == 'tika') {
           $extraction = $this->extract_tika($file);
         }
+        elseif ($extraction_method == 'tika_server') {
+          $extraction = $this->extract_tika_server($file);
+        }
         elseif ($extraction_method == 'python_pdf2txt') {
           if (in_array($file['filemime'], $this->pdf_mimetypes())) {
             $extraction = $this->extract_python_pdf2txt($file);
@@ -324,6 +327,28 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     // Support UTF-8 commands: http://www.php.net/manual/en/function.shell-exec.php#85095
     shell_exec("LANG=en_US.utf-8");
     return shell_exec($cmd);
+  }
+
+  protected function extract_tika_server($file) {
+    $filepath = $this->get_realpath($file);
+
+    $url = 'http://' . variable_get('search_api_attachments_tika_server_host', '') . ':' . variable_get('search_api_attachments_tika_server_port', 9998) . '/tika';
+
+    // server tika
+    $ch = curl_init($url);
+    // Request will be a PUT
+    curl_setopt($ch, CURLOPT_PUT, 1);
+    // Set the file to send
+    $file_path_str = $filepath;
+    $fh_res = fopen($file_path_str, 'r');
+    curl_setopt($ch, CURLOPT_INFILE, $fh_res);
+    curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file_path_str));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    // Send the request
+    $curl_response_res = curl_exec($ch);
+    fclose($fh_res);
+
+    return $curl_response_res;
   }
 
   protected function extract_pdftotext($file) {
