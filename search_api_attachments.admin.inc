@@ -165,7 +165,7 @@ function search_api_attachments_settings_form_validate($form, &$form_state) {
 
     $ch = curl_init($server);
     // Check if server exists.
-    $response = curl_exec($ch);
+    curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     if ($httpCode != 200) {
