@@ -40,7 +40,7 @@ class SearchApiAttachmentsMultifieldAlterSettings extends SearchApiAttachmentsAl
                     // Get the entity wrapper that have multifield with file fields.
                     $item_wrapper = entity_metadata_wrapper($this->index->getEntityType(), $item);
                     if (is_array($item_wrapper->{$multifield}->value())) {
-                      foreach ($item_wrapper->{$multifield} as $delta => $multifield_wrapper) {
+                      foreach ($item_wrapper->{$multifield} as $multifield_wrapper) {
                         $files[] = $multifield_wrapper->{$file_field}->value();
                       }
                     }
