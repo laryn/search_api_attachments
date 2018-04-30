@@ -24,7 +24,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       }
     }
     else {
-      $fields = $this->getFileFields();
+      $fields = $this->getIndexableFileFields();
       foreach ($items as $id => &$item) {
         foreach ($fields as $name => $field) {
           if (isset($item->$name)) {
@@ -178,6 +178,29 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       }
     }
     return $ret;
+  }
+
+  /**
+   * Retrieve list of fields, that should be indexed.
+   *
+   * @return array
+   *   Array of fields, ready to be indexed.
+   */
+  protected function getIndexableFileFields() {
+    $all_fields = $this->getFileFields();
+    $index_fields = $this->index->getFields();
+
+    $indexable = array();
+
+    foreach ($all_fields as $name => $field) {
+      // If field is not in the index, then it was not selected by the user,
+      // so we don't have to perform extraction of unnecessary files.
+      if (isset($index_fields["attachments_$name"])) {
+        $indexable[$name] = $field;
+      }
+    }
+
+    return $indexable;
   }
 
   protected function getFileContent($file) {
