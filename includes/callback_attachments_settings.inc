@@ -2,13 +2,20 @@
 
 /**
  * @file
- * Search API data alteration callback
+ * Search API data alteration callback.
+ */
+
+/**
+ * Indexes files content.
  */
 class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
 
   // Cache table name.
   const CACHE_TABLE = 'cache_search_api_attachments';
 
+  /**
+   * {@inheritdoc}
+   */
   public function alterItems(array &$items) {
 
     if ($this->index->getEntityType() == 'file') {
@@ -50,6 +57,14 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
   }
 
+  /**
+   * Checks if file is allowed to be indexed.
+   *
+   * @param type $file
+   * @param type $item
+   * @param type $field_name
+   * @return boolean
+   */
   public function isFileIndexable($file, $item, $field_name = NULL) {
     // File entity bundle restriction.
     if (isset($this->options['excluded_file_entity_bundles'])) {
@@ -94,6 +109,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return FALSE;
   }
 
+  /**
+   * Adds configuration form.
+   *
+   * @return array
+   */
   public function configurationForm() {
     $default = implode(' ', search_api_attachments_default_excluded());
     $form['excluded_extensions'] = array(
@@ -147,6 +167,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $form;
   }
 
+  /**
+   * Adds attachments property.
+   *
+   * @return string
+   */
   public function propertyInfo() {
     $ret = array();
     if ($this->index->getEntityType() == 'file') {
@@ -169,6 +194,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $ret;
   }
 
+  /**
+   * Helper method to get all file fields.
+   *
+   * @return type
+   */
   protected function getFileFields() {
     $ret = array();
     foreach (field_info_fields() as $name => $field) {
@@ -202,6 +232,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $indexable;
   }
 
+  /**
+   * Extracts th file content
+   *
+   * @param type $file
+   * @return type
+   */
   protected function getFileContent($file) {
     $extraction = FALSE;
     // Let's make the variable consistent.
@@ -273,6 +309,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $extraction;
   }
 
+  /**
+   * Extracts file content for text files.
+   *
+   * @param type $file
+   * @return type
+   */
   protected function extract_simple($file) {
     $text = file_get_contents($this->get_realpath($file));
     $text = iconv("UTF-8", "UTF-8//IGNORE", $text);
@@ -282,6 +324,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $text;
   }
 
+  /**
+   * Extracts images metadata.
+   *
+   * @param type $file
+   * @return string
+   */
   protected function extract_exif($file) {
     $ret = '';
     $url = file_create_url($file['uri']);
@@ -300,6 +348,13 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $ret;
   }
 
+  /**
+   * Extracts file content using local tika executable.
+   *
+   * @param type $file
+   * @return type
+   * @throws Exception
+   */
   protected function extract_tika($file) {
     $filepath = $this->get_realpath($file);
     $tika_path = realpath(variable_get('search_api_attachments_tika_path', ''));
@@ -331,6 +386,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return shell_exec($cmd);
   }
 
+  /**
+   * Extracts file content using a tika server.
+   *
+   * @param type $file
+   * @return type
+   */
   protected function extract_tika_server($file) {
     $filepath = $this->get_realpath($file);
 
@@ -353,6 +414,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $curl_response_res;
   }
 
+  /**
+   * Extracts pdf file content using pdftotext.
+   *
+   * @param type $file
+   * @return type
+   */
   protected function extract_pdftotext($file) {
     $filepath = $this->get_realpath($file);
     // UTF-8 multibyte characters will be stripped by escapeshellargs() for the
@@ -370,6 +437,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return shell_exec($cmd);
   }
 
+  /**
+   * Extracts pdf file content using python pdf2txt script.
+   *
+   * @param type $file
+   * @return type
+   */
   protected function extract_python_pdf2txt($file) {
     $filepath = $this->get_realpath($file);
     // Restore the locale.
@@ -487,6 +560,15 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $result;
   }
 
+  /**
+   * Check if the file is temporary.
+   *
+   * @param array $file
+   *   A file array.
+   *
+   * @return bool
+   *   TRUE if the file is temporary. FALSE otherwise.
+   */
   protected function is_temporary($file) {
     $result = FALSE;
     $wrapper = 'temporary://';
@@ -497,6 +579,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return $result;
   }
 
+  /**
+   * Helper method to get a file's real path.
+   *
+   * @param type $file
+   * @return type
+   */
   protected function get_realpath($file) {
     $wrapper = file_stream_wrapper_get_instance_by_uri($file['uri']);
     $scheme = file_uri_scheme($file['uri']);
@@ -509,6 +597,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
   }
 
+  /**
+   * Helper function to store pdf's mimetypes.
+   *
+   * @return type
+   */
   protected function pdf_mimetypes() {
     return array(
       'application/pdf',
