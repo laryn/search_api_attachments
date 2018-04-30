@@ -291,7 +291,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       $iptc = iptcparse($info['APP13']);
       if (is_array($iptc)) {
         foreach ($iptc as $value) {
-          foreach ($value as $innerkey => $innervalue) {
+          foreach ($value as $innervalue) {
             $ret .= $innervalue . ' ';
           }
         }
