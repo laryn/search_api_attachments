@@ -455,7 +455,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     if (in_array($scheme, array_keys($local_wrappers))) {
       return $wrapper->realpath();
     }
-    else {
+    elseif (is_object($wrapper)) {
       return $wrapper->getExternalUrl();
     }
   }
