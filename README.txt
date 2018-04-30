@@ -1,3 +1,6 @@
+INTRODUCTION
+------------
+
 Search API Attachments
 
 This module is an add-on to the Search API which allows the indexing and
