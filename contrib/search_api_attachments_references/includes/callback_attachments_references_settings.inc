@@ -16,7 +16,7 @@ class SearchApiAttachmentsReferencesAlterSettings extends SearchApiAttachmentsAl
     // Get the file fields.
     $file_fields = $this->getFileFields();
 
-    foreach ($items as $id => &$item) {
+    foreach ($items as &$item) {
       $item_wrapper = entity_metadata_wrapper($this->index->getEntityType(), $item);
 
       // Case of entity reference fields.
