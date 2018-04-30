@@ -14,7 +14,7 @@ class SearchApiAttachmentsMultifieldAlterSettings extends SearchApiAttachmentsAl
     $multifields_instances = field_info_instances('multifield');
     $multifields = array_keys($multifields_instances);
     if (!empty($multifields_instances)) {
-      foreach ($items as $id => &$item) {
+      foreach ($items as &$item) {
         // Case of multifield fields.
         foreach ($multifields as $multifield) {
           if (isset($item->{$multifield})) {
