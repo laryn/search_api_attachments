@@ -12,7 +12,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   public function alterItems(array &$items) {
 
     if ($this->index->getEntityType() == 'file') {
-      foreach ($items as $id => &$item) {
+      foreach ($items as &$item) {
         $file = array();
         foreach ($item as $key => $value) {
           $file[$key] = $value;
@@ -284,6 +284,9 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
 
   protected function extract_exif($file) {
     $ret = '';
+    $url = file_create_url($file['uri']);
+    $info = array();
+    getimagesize($url, $info);
     if (isset($info['APP13'])) {
       $iptc = iptcparse($info['APP13']);
       if (is_array($iptc)) {
