@@ -5,7 +5,6 @@
  * Drupal hooks
  */
 
-
 /**
  * Implements hook_help().
  */
