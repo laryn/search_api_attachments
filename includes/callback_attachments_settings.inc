@@ -61,14 +61,16 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * Checks if file is allowed to be indexed.
    *
    * @param object $file
-   *   The file object
+   *   The file object.
    * @param array $item
-   *   The search api item
+   *   The search api item.
    * @param string $field_name
-   *   The file name
-   * @return boolean
+   *   The file name.
+   *
+   * @return bool
+   *   TRUE is the file is allowed to be indexed, FALSE otherwise.
    */
-  public function isFileIndexable($file, $item, $field_name = NULL) {
+  public function isFileIndexable($file, array $item, $field_name = NULL) {
     // File entity bundle restriction.
     if (isset($this->options['excluded_file_entity_bundles'])) {
       if (!empty($this->options['excluded_file_entity_bundles'])) {
@@ -116,6 +118,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * Adds configuration form.
    *
    * @return array
+   *   The configuration form.
    */
   public function configurationForm() {
     $default = implode(' ', search_api_attachments_default_excluded());
@@ -173,7 +176,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Adds attachments property.
    *
-   * @return string
+   * @return array
+   *   containing the property.
    */
   public function propertyInfo() {
     $ret = array();
@@ -200,7 +204,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Helper method to get all file fields.
    *
-   * @return type
+   * @return array
+   *   contaigning all the file fields names.
    */
   protected function getFileFields() {
     $ret = array();
@@ -236,10 +241,13 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   }
 
   /**
-   * Extracts th file content
+   * Extracts th file content.
    *
    * @param type $file
-   * @return type
+   *   The file object.
+   *
+   * @return string
+   *   The extracted content.
    */
   protected function getFileContent($file) {
     $extraction = FALSE;
