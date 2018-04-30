@@ -60,9 +60,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Checks if file is allowed to be indexed.
    *
-   * @param type $file
-   * @param type $item
-   * @param type $field_name
+   * @param object $file
+   *   The file object
+   * @param array $item
+   *   The search api item
+   * @param string $field_name
+   *   The file name
    * @return boolean
    */
   public function isFileIndexable($file, $item, $field_name = NULL) {
