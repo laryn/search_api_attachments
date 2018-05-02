@@ -1,13 +1,18 @@
 <?php
 
 /**
+ * @file
+ * Module install file.
+ */
+
+/**
  * Set excluded_private to FALSE for existing websites to preserve behavior.
  */
 function search_api_attachments_field_collections_update_7100() {
   $search_api_indexes = db_select('search_api_index')
-      ->fields('search_api_index', array('machine_name'))
-      ->execute()
-      ->fetchCol();
+    ->fields('search_api_index', array('machine_name'))
+    ->execute()
+    ->fetchCol();
 
   $indexes = search_api_index_load_multiple($search_api_indexes);
 

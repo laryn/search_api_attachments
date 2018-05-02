@@ -243,7 +243,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts th file content.
    *
-   * @param type $file
+   * @param object $file
    *   The file object.
    *
    * @return string
@@ -268,11 +268,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
 
     if (file_exists($file['uri'])) {
-      if ($file['filemime'] == 'text/plain' || $file['filemime'] == 'text/x-diff') {
-        $extraction = $this->extract_simple($file);
+      if (in_array($file['filemime'], $this->textMimetypes())) {
+        $extraction = $this->extractSimple($file);
       }
-      elseif (in_array($file['filemime'], array('image/jpeg', 'image/jpg', 'image/tiff'))) {
-        $extraction = $this->extract_exif($file);
+      elseif (in_array($file['filemime'], $this->imageMimetypes())) {
+        $extraction = $this->extractExif($file);
       }
       else {
         $extraction_method = variable_get('search_api_attachments_extract_using', 'tika');
@@ -285,7 +285,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
           $extraction = $this->extract_tika_server($file);
         }
         elseif ($extraction_method == 'python_pdf2txt') {
-          if (in_array($file['filemime'], $this->pdf_mimetypes())) {
+          if (in_array($file['filemime'], $this->pdfMimetypes())) {
             $extraction = $this->extract_python_pdf2txt($file);
           }
           elseif (variable_get('search_api_attachments_debug', FALSE)) {
@@ -293,7 +293,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
           }
         }
         elseif ($extraction_method == 'pdftotext') {
-          if (in_array($file['filemime'], $this->pdf_mimetypes())) {
+          if (in_array($file['filemime'], $this->pdfMimetypes())) {
             $extraction = $this->extract_pdftotext($file);
           }
           elseif (variable_get('search_api_attachments_debug', FALSE)) {
@@ -323,10 +323,13 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts file content for text files.
    *
-   * @param type $file
-   * @return type
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The text.
    */
-  protected function extract_simple($file) {
+  protected function extractSimple($file) {
     $text = file_get_contents($this->get_realpath($file));
     $text = iconv("UTF-8", "UTF-8//IGNORE", $text);
     $text = filter_xss(str_replace(array('<', '>'), array(' <', '> '), $text), array());
@@ -338,10 +341,13 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts images metadata.
    *
-   * @param type $file
+   * @param object $file
+   *   The file.
+   *
    * @return string
+   *   The metadata.
    */
-  protected function extract_exif($file) {
+  protected function extractExif($file) {
     $ret = '';
     $url = file_create_url($file['uri']);
     $info = array();
@@ -362,8 +368,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts file content using local tika executable.
    *
-   * @param type $file
-   * @return type
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The file content.
+   *
    * @throws Exception
    */
   protected function extract_tika($file) {
@@ -400,8 +410,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts file content using a tika server.
    *
-   * @param type $file
-   * @return type
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The file content.
    */
   protected function extract_tika_server($file) {
     $filepath = $this->get_realpath($file);
@@ -428,8 +441,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts pdf file content using pdftotext.
    *
-   * @param type $file
-   * @return type
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The file content.
    */
   protected function extract_pdftotext($file) {
     $filepath = $this->get_realpath($file);
@@ -451,8 +467,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extracts pdf file content using python pdf2txt script.
    *
-   * @param type $file
-   * @return type
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The file content.
    */
   protected function extract_python_pdf2txt($file) {
     $filepath = $this->get_realpath($file);
@@ -474,6 +493,14 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Extract data using Solr (via the ExtractingRequestHandler) or using the
    * remote Tika servlet.
+   *
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The file content.
+   *
+   * @throws SearchApiException
    *
    * @see http://wiki.apache.org/solr/ExtractingRequestHandler
    * @see http://wiki.apache.org/tika/TikaJAXRS
@@ -593,8 +620,11 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Helper method to get a file's real path.
    *
-   * @param type $file
-   * @return type
+   * @param object $file
+   *   The file.
+   *
+   * @return string
+   *   The real path.
    */
   protected function get_realpath($file) {
     $wrapper = file_stream_wrapper_get_instance_by_uri($file['uri']);
@@ -611,9 +641,10 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Helper function to store pdf's mimetypes.
    *
-   * @return type
+   * @return array
+   *   Supported mime types.
    */
-  protected function pdf_mimetypes() {
+  protected function pdfMimetypes() {
     return array(
       'application/pdf',
       'application/x-pdf',
@@ -621,6 +652,33 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       'text/x-pdf',
       'text/pdf',
       'applications/vnd.pdf',
+    );
+  }
+
+  /**
+   * Helper function to store image's mimetypes.
+   *
+   * @return array
+   *   Supported mime types.
+   */
+  protected function imageMimetypes() {
+    return array(
+      'image/jpeg',
+      'image/jpg',
+      'image/tiff'
+    );
+  }
+
+  /**
+   * Helper function to store text's mimetypes.
+   *
+   * @return array.
+   *   Supported mime types.
+   */
+  protected function textMimetypes() {
+    return array(
+      'text/plain',
+      'text/x-diff',
     );
   }
 

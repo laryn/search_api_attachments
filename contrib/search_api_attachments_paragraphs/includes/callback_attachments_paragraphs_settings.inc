@@ -4,6 +4,10 @@
  * @file
  * Search API data alteration callback.
  */
+
+/**
+ * {@inheritdoc}
+ */
 class SearchApiAttachmentsParagraphsAlterSettings extends SearchApiAttachmentsAlterSettings {
 
   /**

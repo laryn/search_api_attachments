@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Admin settings
+ * Admin settings.
  */
 
 /**
@@ -160,7 +160,7 @@ function search_api_attachments_settings_form_validate($form, &$form_state) {
     }
   }
   elseif ($form_state['values']['search_api_attachments_extract_using'] == 'tika_server') {
-    // set server URL.
+    // Set server URL.
     $server = 'http://' . $form_state['values']['search_api_attachments_tika_server_host'] . ':' . $form_state['values']['search_api_attachments_tika_server_port'] . '/tika';
 
     $ch = curl_init($server);
