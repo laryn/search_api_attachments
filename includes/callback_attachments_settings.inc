@@ -462,7 +462,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     $cmd = escapeshellcmd('pdftotext') . ' ' . escapeshellarg($filepath) . ' -';
     // Restore the locale.
     setlocale(LC_CTYPE, $backup_locale);
-    // Support UTF-8 commands: http://www.php.net/manual/en/function.shell-exec.php#85095
+    // Support UTF-8 commands : 
+    // http://www.php.net/manual/en/function.shell-exec.php#85095
     shell_exec("LANG=en_US.utf-8");
     return shell_exec($cmd);
   }
@@ -573,7 +574,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
       if (isset($response->extracted)) {
         $extraction = $response->extracted;
       }
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       // Log the exception to watchdog. Exceptions from Solr may be transient,
       // or indicate a problem with a specific file.
       watchdog('search_api_attachments', 'Exception occurred sending %filepath to Solr.', array(
