@@ -286,7 +286,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
         }
         elseif ($extraction_method == 'python_pdf2txt') {
           if (in_array($file['filemime'], $this->pdfMimetypes())) {
-            $extraction = $this->extract_python_pdf2txt($file);
+            $extraction = $this->extractPythonPdf2txt($file);
           }
           elseif (variable_get('search_api_attachments_debug', FALSE)) {
             watchdog('search_api_attachments', 'The python_pdf2txt extraction method does not support %mime_type', array('%mime_type' => $file['filemime']), WATCHDOG_WARNING);
@@ -476,7 +476,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return string
    *   The file content.
    */
-  protected function extract_python_pdf2txt($file) {
+  protected function extractPythonPdf2txt($file) {
     $filepath = $this->getRealpath($file);
     // Restore the locale.
     $pdf2txt_path = realpath(variable_get('search_api_attachments_python_pdf2txt_path', '/usr/bin'));
@@ -488,7 +488,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     // valid.
     $backup_locale = setlocale(LC_CTYPE, '0');
     setlocale(LC_CTYPE, $backup_locale);
-    // Support UTF-8 commands: 
+    // Support UTF-8 commands:
     // http://www.php.net/manual/en/function.shell-exec.php#85095
     shell_exec("LANG=en_US.utf-8");
     return shell_exec($cmd);
@@ -496,7 +496,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
 
   /**
    * Extract data using Solr.
-   * 
+   *
    * This is done via the ExtractingRequestHandler or using the
    * remote Tika servlet.
    *
@@ -594,7 +594,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return bool
    *   TRUE if the file is private. FALSE otherwise.
    */
-  protected function isPrivate($file) {
+  protected function isPrivate(array $file) {
     $result = FALSE;
     $wrapper = 'private://';
     $uri = $file['uri'];
@@ -613,7 +613,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return bool
    *   TRUE if the file is temporary. FALSE otherwise.
    */
-  protected function isTemporary($file) {
+  protected function isTemporary(array $file) {
     $result = FALSE;
     $wrapper = 'temporary://';
     $uri = $file['uri'];
@@ -678,7 +678,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
   /**
    * Helper function to store text's mimetypes.
    *
-   * @return array.
+   * @return array
    *   Supported mime types.
    */
   protected function textMimetypes() {
