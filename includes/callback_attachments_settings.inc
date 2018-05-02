@@ -95,7 +95,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
 
     // Private file restriction.
-    if (!$this->is_temporary($file) && !($this->options['excluded_private'] && $this->is_private($file))) {
+    if (!$this->isTemporary($file) && !($this->options['excluded_private'] && $this->isPrivate($file))) {
       // Extension restriction.
       if (!in_array($file['filemime'], $exclude)) {
         // File size restriction.
@@ -279,10 +279,10 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
         // Send the extraction request to the right place depending on the
         // current setting.
         if ($extraction_method == 'tika') {
-          $extraction = $this->extract_tika($file);
+          $extraction = $this->extractTika($file);
         }
         elseif ($extraction_method == 'tika_server') {
-          $extraction = $this->extract_tika_server($file);
+          $extraction = $this->extractTikaServer($file);
         }
         elseif ($extraction_method == 'python_pdf2txt') {
           if (in_array($file['filemime'], $this->pdfMimetypes())) {
@@ -294,14 +294,14 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
         }
         elseif ($extraction_method == 'pdftotext') {
           if (in_array($file['filemime'], $this->pdfMimetypes())) {
-            $extraction = $this->extract_pdftotext($file);
+            $extraction = $this->extractPdftotext($file);
           }
           elseif (variable_get('search_api_attachments_debug', FALSE)) {
             watchdog('search_api_attachments', 'The pdftotext extraction method does not support %mime_type', array('%mime_type' => $file['filemime']), WATCHDOG_WARNING);
           }
         }
         else {
-          $extraction = $this->extract_solr($file);
+          $extraction = $this->extractSolr($file);
         }
       }
     }
@@ -330,7 +330,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    *   The text.
    */
   protected function extractSimple($file) {
-    $text = file_get_contents($this->get_realpath($file));
+    $text = file_get_contents($this->getRealpath($file));
     $text = iconv("UTF-8", "UTF-8//IGNORE", $text);
     $text = filter_xss(str_replace(array('<', '>'), array(' <', '> '), $text), array());
     $text = htmlspecialchars(html_entity_decode($text, ENT_NOQUOTES, 'UTF-8'), ENT_NOQUOTES, 'UTF-8');
@@ -376,8 +376,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    *
    * @throws Exception
    */
-  protected function extract_tika($file) {
-    $filepath = $this->get_realpath($file);
+  protected function extractTika($file) {
+    $filepath = $this->getRealpath($file);
     $tika_path = realpath(variable_get('search_api_attachments_tika_path', ''));
     $tika = realpath($tika_path . '/' . variable_get('search_api_attachments_tika_jar', 'tika-app-1.6.jar'));
     if (!($tika) || !is_file($tika)) {
@@ -385,7 +385,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
     // UTF-8 multibyte characters will be stripped by escapeshellargs() for the
     // default C-locale.
-    // So temporarily set the locale to UTF-8 so that the filepath remains valid.
+    // So temporarily set the locale to UTF-8 so that the filepath
+    // remains valid.
     $backup_locale = setlocale(LC_CTYPE, '0');
     setlocale(LC_CTYPE, 'en_US.UTF-8');
     $param = '';
@@ -402,7 +403,8 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     }
     // Restore the locale.
     setlocale(LC_CTYPE, $backup_locale);
-    // Support UTF-8 commands: http://www.php.net/manual/en/function.shell-exec.php#85095
+    // Support UTF-8 commands:
+    // http://www.php.net/manual/en/function.shell-exec.php#85095
     shell_exec("LANG=en_US.utf-8");
     return shell_exec($cmd);
   }
@@ -416,22 +418,22 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return string
    *   The file content.
    */
-  protected function extract_tika_server($file) {
-    $filepath = $this->get_realpath($file);
+  protected function extractTikaServer($file) {
+    $filepath = $this->getRealpath($file);
 
     $url = 'http://' . variable_get('search_api_attachments_tika_server_host', '') . ':' . variable_get('search_api_attachments_tika_server_port', 9998) . '/tika';
 
-    // server tika
+    // Server tika.
     $ch = curl_init($url);
-    // Request will be a PUT
+    // Request will be a PUT.
     curl_setopt($ch, CURLOPT_PUT, 1);
-    // Set the file to send
+    // Set the file to send.
     $file_path_str = $filepath;
     $fh_res = fopen($file_path_str, 'r');
     curl_setopt($ch, CURLOPT_INFILE, $fh_res);
     curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file_path_str));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    // Send the request
+    // Send the request.
     $curl_response_res = curl_exec($ch);
     fclose($fh_res);
 
@@ -447,11 +449,12 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return string
    *   The file content.
    */
-  protected function extract_pdftotext($file) {
-    $filepath = $this->get_realpath($file);
+  protected function extractPdftotext($file) {
+    $filepath = $this->getRealpath($file);
     // UTF-8 multibyte characters will be stripped by escapeshellargs() for the
     // default C-locale.
-    // So temporarily set the locale to UTF-8 so that the filepath remains valid.
+    // So temporarily set the locale to UTF-8 so that the filepath remains
+    // valid.
     $backup_locale = setlocale(LC_CTYPE, '0');
     setlocale(LC_CTYPE, 'en_US.UTF-8');
     // Pdftotext descriptions states that '-' as text-file will send text to
@@ -474,7 +477,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    *   The file content.
    */
   protected function extract_python_pdf2txt($file) {
-    $filepath = $this->get_realpath($file);
+    $filepath = $this->getRealpath($file);
     // Restore the locale.
     $pdf2txt_path = realpath(variable_get('search_api_attachments_python_pdf2txt_path', '/usr/bin'));
     $pdf2txt = realpath($pdf2txt_path . '/' . variable_get('search_api_attachments_python_pdf2txt_script', 'pdf2txt'));
@@ -485,13 +488,16 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     // valid.
     $backup_locale = setlocale(LC_CTYPE, '0');
     setlocale(LC_CTYPE, $backup_locale);
-    // Support UTF-8 commands: http://www.php.net/manual/en/function.shell-exec.php#85095
+    // Support UTF-8 commands: 
+    // http://www.php.net/manual/en/function.shell-exec.php#85095
     shell_exec("LANG=en_US.utf-8");
     return shell_exec($cmd);
   }
 
   /**
-   * Extract data using Solr (via the ExtractingRequestHandler) or using the
+   * Extract data using Solr.
+   * 
+   * This is done via the ExtractingRequestHandler or using the
    * remote Tika servlet.
    *
    * @param object $file
@@ -505,10 +511,10 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @see http://wiki.apache.org/solr/ExtractingRequestHandler
    * @see http://wiki.apache.org/tika/TikaJAXRS
    */
-  protected function extract_solr($file) {
+  protected function extractSolr($file) {
     $extraction = FALSE;
 
-    $filepath = $this->get_realpath($file);
+    $filepath = $this->getRealpath($file);
     try {
       $filename = basename($filepath);
 
@@ -588,7 +594,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return bool
    *   TRUE if the file is private. FALSE otherwise.
    */
-  protected function is_private($file) {
+  protected function isPrivate($file) {
     $result = FALSE;
     $wrapper = 'private://';
     $uri = $file['uri'];
@@ -607,7 +613,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return bool
    *   TRUE if the file is temporary. FALSE otherwise.
    */
-  protected function is_temporary($file) {
+  protected function isTemporary($file) {
     $result = FALSE;
     $wrapper = 'temporary://';
     $uri = $file['uri'];
@@ -626,7 +632,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
    * @return string
    *   The real path.
    */
-  protected function get_realpath($file) {
+  protected function getRealpath($file) {
     $wrapper = file_stream_wrapper_get_instance_by_uri($file['uri']);
     $scheme = file_uri_scheme($file['uri']);
     $local_wrappers = file_get_stream_wrappers(STREAM_WRAPPERS_LOCAL);
@@ -665,7 +671,7 @@ class SearchApiAttachmentsAlterSettings extends SearchApiAbstractAlterCallback {
     return array(
       'image/jpeg',
       'image/jpg',
-      'image/tiff'
+      'image/tiff',
     );
   }
 

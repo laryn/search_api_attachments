@@ -6,5 +6,3 @@ core = 7.x
 package = Search
 
 files[] = includes/callback_attachments_field_collections_settings.inc
-
-
