@@ -7,10 +7,3 @@ dependencies[] = search_api_attachments
 dependencies[] = link
 
 files[] = includes/callback_attachments_links_settings.inc
-
-; Information added by Drupal.org packaging script on 2017-07-08
-version = "7.x-1.12"
-core = "7.x"
-project = "search_api_attachments"
-datestamp = "1499524145"
-

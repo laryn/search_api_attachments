@@ -7,7 +7,7 @@ Example:
 You have a node that has 2 fields :
 
  field_documents: a File field.
- field_links: a link field, that file URLs.
+ field_links: a link field, that has file URLs.
 
 To index the field_documents content, you don't need this submodule, just use
 the search_api_attachments module.
