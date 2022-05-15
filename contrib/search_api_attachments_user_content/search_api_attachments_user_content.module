@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Drupal hooks.
+ * Backdrop hooks.
  */
 
 /**
@@ -54,4 +54,13 @@ function search_api_attachments_user_content_search_api_alter_callback_info() {
     'class' => 'SearchApiAttachmentsUserContentAlterSettings',
   );
   return $callbacks;
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function search_api_attachments_user_content_autoload_info() {
+  return array(
+    'SearchApiAttachmentsUserContentAlterSettings' => 'includes/callback_attachments_user_content_settings.inc',
+  );
 }

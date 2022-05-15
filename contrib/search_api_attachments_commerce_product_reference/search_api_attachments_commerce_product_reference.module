@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Drupal hooks.
+ * Backdrop hooks.
  */
 
 /**
@@ -54,4 +54,13 @@ function search_api_attachments_commerce_product_reference_search_api_alter_call
     'class' => 'SearchApiAttachmentsCommerceProductReferenceAlterSettings',
   );
   return $callbacks;
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function search_api_attachments_commerce_product_reference_autoload_info() {
+  return array(
+    'SearchApiAttachmentsCommerceProductReferenceAlterSettings' => 'includes/callback_attachments_commerce_product_reference_settings.inc',
+  );
 }

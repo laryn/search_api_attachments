@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Drupal hooks.
+ * Backdrop hooks.
  */
 
 /**
@@ -51,7 +51,7 @@ function search_api_attachments_menu() {
   $items['admin/config/search/search_api/attachments'] = array(
     'title' => 'Search API attachments',
     'description' => 'Search through file content',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('search_api_attachments_settings_form'),
     'access arguments' => array('administer search_api_attachments'),
     'file' => 'search_api_attachments.admin.inc',
@@ -141,10 +141,31 @@ function search_api_attachments_file_delete($file) {
 }
 
 /**
+ * Implements hook_config_info().
+ */
+function search_api_attachments_config_info() {
+  $prefixes['search_api_attachments.settings'] = array(
+    'label' => t('Search API attachments settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_flush_caches().
  */
 function search_api_attachments_flush_caches() {
-  if (!variable_get('search_api_attachments_preserve_cache', FALSE)) {
+  if (!config_get('search_api_attachments.settings', 'search_api_attachments_preserve_cache')) {
     return array('cache_search_api_attachments');
   }
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function search_api_attachments_autoload_info() {
+  return array(
+    'SearchApiAttachmentsAlterSettings' => 'includes/callback_attachments_settings.inc',
+    'SearchApiAttachmentsViewsHandlerAttachmentsFilter' => 'includes/views/search_api_attachments_views_handler_attachments_filter.inc',
+  );
 }

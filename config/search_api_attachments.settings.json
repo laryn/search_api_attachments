@@ -1,0 +1,14 @@
+{
+    "_config_name": "search_api_attachments.settings",
+    "search_api_attachments_extract_using": "tika",
+    "search_api_attachments_debug": false,
+    "search_api_attachments_tika_path": "",
+    "search_api_attachments_tika_jar": "tika-app-1.6.jar",
+    "search_api_attachments_java": "java",
+    "search_api_attachments_tika_server_host": "localhost",
+    "search_api_attachments_tika_server_port": "9998",
+    "search_api_attachments_python_pdf2txt_path": "/usr/bin",
+    "search_api_attachments_python_pdf2txt_script": "pdf2txt",
+    "search_api_attachments_extracting_servlet_path": "update/extract",
+    "search_api_attachments_preserve_cache": false
+}
