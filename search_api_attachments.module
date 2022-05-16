@@ -40,6 +40,7 @@ function search_api_attachments_permission() {
 function search_api_attachments_views_api() {
   return array(
     'api' => '3.0',
+    'path' => backdrop_get_path('module', 'search_api_attachments') . '/views',
   );
 }
 
